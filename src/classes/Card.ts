@@ -2,10 +2,17 @@ import Rank from '../types/Rank';
 import type Suit from '../types/Suit';
 
 export default class Card {
+  static nextId = 1;
+
+  public readonly id: number;
+
   constructor(
     public readonly suit: Suit,
     public readonly rank: Rank,
-  ) {}
+  ) {
+    this.id = Card.nextId;
+    Card.nextId++;
+  }
 
   public get chipValue() {
     switch (this.rank) {

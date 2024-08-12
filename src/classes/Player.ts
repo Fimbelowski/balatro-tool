@@ -7,11 +7,10 @@ export default class Player {
   // Draw Pile
   // Held Hand
   private drawPile: DrawPile;
-  private heldHand: HeldHand;
+  public readonly heldHand: HeldHand;
 
   constructor(private deck: Deck) {
-    this.drawPile = deck.shuffle();
+    this.drawPile = this.deck.shuffle();
     this.heldHand = new HeldHand(this.drawPile, deck.handSize);
-    console.log(this.heldHand);
   }
 }
