@@ -3,8 +3,16 @@ import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
 
+import createStandardPlayingCards from './utils/createStandardPlayingCards';
+import Deck from './classes/Deck';
+import Player from './classes/Player';
+
 function App() {
   const [count, setCount] = useState(0);
+
+  const deck = new Deck(createStandardPlayingCards(), 8, 4, 2);
+  const player = new Player(deck);
+  console.log(player);
 
   return (
     <>
