@@ -1,6 +1,6 @@
 import type Card from './Card';
 import DrawPile from './DrawPile';
-import nestedSort, {type ValuationFunction} from '../utils/nestedSort';
+import nestedSort, { type ValuationFunction } from '../utils/nestedSort';
 
 type HeldHandSortBehavior = 'rank' | 'suit';
 
@@ -25,7 +25,7 @@ export default class HeldHand {
   }
 
   private discardCard(cardId: number) {
-    const index = this.cards.findIndex(({id}) => id === cardId);
+    const index = this.cards.findIndex(({ id }) => id === cardId);
 
     if (index === undefined) {
       throw Error(`Card id ${cardId} not found.`);
@@ -44,7 +44,7 @@ export default class HeldHand {
 
       this.cards.push(drawnCard);
     }
-    
+
     this.sort();
   }
 
@@ -54,11 +54,23 @@ export default class HeldHand {
   }
 
   public sort() {
-    const rankValuationFunction: ValuationFunction<Card> = ({numericalRank}: Card) => numericalRank;
-    const suitValuationFunction: ValuationFunction<Card> = ({numericalSuit}: Card) => numericalSuit;
+    const rankValuationFunction: ValuationFunction<Card> = ({
+      numericalRank,
+    }: Card) => numericalRank;
 
-    const valuationOrder = this.privateHeldHandSortBehavior === 'rank' ? [rankValuationFunction, suitValuationFunction] : [suitValuationFunction, rankValuationFunction]
+    const suitValuationFunction: ValuationFunction<Card> = ({
+      numericalSuit,
+    }: Card) => numericalSuit;
 
-    this.cards.splice(0, this.cards.length, ...nestedSort(this.cards, valuationOrder));
+    const valuationOrder =
+      this.privateHeldHandSortBehavior === 'rank'
+        ? [rankValuationFunction, suitValuationFunction]
+        : [suitValuationFunction, rankValuationFunction];
+
+    this.cards.splice(
+      0,
+      this.cards.length,
+      ...nestedSort(this.cards, valuationOrder),
+    );
   }
 }
