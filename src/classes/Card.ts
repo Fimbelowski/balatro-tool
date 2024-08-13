@@ -1,8 +1,8 @@
 import Rank from '../types/Rank';
-import type Suit from '../types/Suit';
+import Suit from '../types/Suit';
 
 export default class Card {
-  static nextId = 1;
+  private static nextId = 1;
 
   public readonly id: number;
 
@@ -40,5 +40,15 @@ export default class Card {
       case Rank.ACE:
         return 11;
     }
+  }
+
+  public get numericalRank() {
+    const ranks = Object.values(Rank);
+    return ranks.indexOf(this.rank);
+  }
+
+  public get numericalSuit() {
+    const suits = Object.values(Suit);
+    return suits.indexOf(this.suit);
   }
 }

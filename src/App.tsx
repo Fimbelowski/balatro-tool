@@ -11,13 +11,7 @@ function App() {
 
   const deck = new Deck({numDiscards: 3});
   const player = new Player(deck);
-  
-  const {heldHand} = player;
-  const firstCard = heldHand.currentHand[0];
-  console.log([...heldHand.currentHand])
-  console.log(firstCard);
-  heldHand.discard([firstCard.id]);
-  console.log([...heldHand.currentHand]);
+  console.log(player.heldHand.cards);
 
   return (
     <>

@@ -3,9 +3,6 @@ import DrawPile from './DrawPile';
 import HeldHand from './HeldHand';
 
 export default class Player {
-  // Deck
-  // Draw Pile
-  // Held Hand
   private drawPile: DrawPile;
   public readonly heldHand: HeldHand;
 
