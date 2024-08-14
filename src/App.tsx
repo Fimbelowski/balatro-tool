@@ -11,7 +11,8 @@ function App() {
 
   const deck = new Deck({ numDiscards: 3 });
   const player = new Player(deck);
-  console.log(player.heldHand.cards);
+
+  console.log(player.heldHand.toString());
 
   return (
     <>

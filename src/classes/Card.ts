@@ -1,5 +1,7 @@
 import Rank from '../types/Rank';
+import rankToString from '../utils/rankToString';
 import Suit from '../types/Suit';
+import suitToString from '../utils/suitToString';
 
 export default class Card {
   private static nextId = 1;
@@ -50,5 +52,9 @@ export default class Card {
   public get numericalSuit() {
     const suits = Object.values(Suit);
     return suits.indexOf(this.suit);
+  }
+
+  public toString() {
+    return `${rankToString(this.rank)}${suitToString(this.suit)}`;
   }
 }

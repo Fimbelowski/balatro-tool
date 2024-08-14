@@ -73,4 +73,8 @@ export default class HeldHand {
       ...nestedSort(this.cards, valuationOrder),
     );
   }
+
+  public toString() {
+    return this.cards.map((card) => card.toString()).join(' ');
+  }
 }
