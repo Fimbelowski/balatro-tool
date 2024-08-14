@@ -1,6 +1,7 @@
 import type Card from './Card';
 import DrawPile from './DrawPile';
 import nestedSort, { type ValuationFunction } from '../utils/nestedSort';
+import Rank from '../types/Rank';
 
 type HeldHandSortBehavior = 'rank' | 'suit';
 
@@ -14,6 +15,10 @@ export default class HeldHand {
   ) {
     this.cards = [];
     this.drawUntilHandIsFull();
+  }
+
+  containsPair() {
+    // return this.rankMap.values()
   }
 
   discard(cardIds: number[]) {
@@ -51,6 +56,21 @@ export default class HeldHand {
   set heldHandSortBehavior(newHeldHandSortBehavior: HeldHandSortBehavior) {
     this.privateHeldHandSortBehavior = newHeldHandSortBehavior;
     this.sort();
+  }
+
+  get rankMap() {
+    const rankMap = new Map<Rank, number>();
+
+    this.cards.forEach(({ rank }) => {
+      if (rankMap.get(rank) === undefined) {
+        rankMap.set(rank, 0);
+      }
+
+      const rankValue = rankMap.get(rank) as number;
+      rankMap.set(rank, rankValue + 1);
+    });
+
+    return rankMap;
   }
 
   public sort() {
