@@ -2,6 +2,7 @@ import type Card from './Card';
 import DrawPile from './DrawPile';
 import nestedSort, { type ValuationFunction } from '../utils/nestedSort';
 import Rank from '../types/Rank';
+import Suit from '../types/Suit';
 
 type HeldHandSortBehavior = 'rank' | 'suit';
 
@@ -17,8 +18,58 @@ export default class HeldHand {
     this.drawUntilHandIsFull();
   }
 
+  containsFlush() {
+    return this.containsAtLeastNOfAnySuit(5);
+  }
+
+  containsFullHouse() {
+    const rankFrequenciesAsArray = Array.from(this.rankFrequencies.values());
+
+    const threeOfAKindRankIndex = rankFrequenciesAsArray.findIndex(
+      (value) => value >= 3,
+    );
+
+    if (threeOfAKindRankIndex === -1) {
+      return false;
+    }
+
+    rankFrequenciesAsArray.splice(threeOfAKindRankIndex, 1);
+
+    return rankFrequenciesAsArray.some((value) => value >= 2);
+  }
+
+  private containsAtLeastNOfAnyRank(n: number) {
+    return Array.from(this.rankFrequencies.values()).some(
+      (value) => value >= n,
+    );
+  }
+
+  private containsAtLeastNOfAnySuit(n: number) {
+    return Array.from(this.suitMap.values()).some((value) => value >= n);
+  }
+
   containsPair() {
-    // return this.rankMap.values()
+    return this.containsAtLeastNOfAnyRank(2);
+  }
+
+  containsStraight() {
+    console.log(this.distinctRanks);
+  }
+
+  containsThreeOfAKind() {
+    return this.containsAtLeastNOfAnyRank(3);
+  }
+
+  containsTwoPair() {
+    let numPairs = 0;
+
+    for (const mapValue of this.rankFrequencies.values()) {
+      if (mapValue >= 2) {
+        numPairs++;
+      }
+    }
+
+    return numPairs >= 2;
   }
 
   discard(cardIds: number[]) {
@@ -37,6 +88,16 @@ export default class HeldHand {
     }
 
     this.cards.splice(index, 1);
+  }
+
+  private get distinctRanks() {
+    const distinctRanks = new Set();
+
+    this.cards.forEach(({ rank }) => {
+      distinctRanks.add(rank);
+    });
+
+    return distinctRanks;
   }
 
   private drawUntilHandIsFull() {
@@ -58,19 +119,19 @@ export default class HeldHand {
     this.sort();
   }
 
-  get rankMap() {
-    const rankMap = new Map<Rank, number>();
+  private get rankFrequencies() {
+    const rankFrequencies = new Map<Rank, number>();
 
     this.cards.forEach(({ rank }) => {
-      if (rankMap.get(rank) === undefined) {
-        rankMap.set(rank, 0);
+      if (rankFrequencies.get(rank) === undefined) {
+        rankFrequencies.set(rank, 0);
       }
 
-      const rankValue = rankMap.get(rank) as number;
-      rankMap.set(rank, rankValue + 1);
+      const rankValue = rankFrequencies.get(rank) as number;
+      rankFrequencies.set(rank, rankValue + 1);
     });
 
-    return rankMap;
+    return rankFrequencies;
   }
 
   public sort() {
@@ -92,6 +153,21 @@ export default class HeldHand {
       this.cards.length,
       ...nestedSort(this.cards, valuationOrder),
     );
+  }
+
+  get suitMap() {
+    const rankMap = new Map<Suit, number>();
+
+    this.cards.forEach(({ suit }) => {
+      if (rankMap.get(suit) === undefined) {
+        rankMap.set(suit, 0);
+      }
+
+      const rankValue = rankMap.get(suit) as number;
+      rankMap.set(suit, rankValue + 1);
+    });
+
+    return rankMap;
   }
 
   public toString() {

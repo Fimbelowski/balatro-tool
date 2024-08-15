@@ -13,7 +13,7 @@ function App() {
   const player = new Player(deck);
 
   console.log(player.heldHand.toString());
-  console.log(player.heldHand.rankMap);
+  console.log(player.heldHand.containsStraight());
 
   return (
     <>
