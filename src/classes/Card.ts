@@ -18,28 +18,28 @@ export default class Card {
 
   public get chipValue() {
     switch (this.rank) {
-      case Rank.TWO:
+      case Rank.Two:
         return 2;
-      case Rank.THREE:
+      case Rank.Three:
         return 3;
-      case Rank.FOUR:
+      case Rank.Four:
         return 4;
-      case Rank.FIVE:
+      case Rank.Five:
         return 5;
-      case Rank.SIX:
+      case Rank.Six:
         return 6;
-      case Rank.SEVEN:
+      case Rank.Seven:
         return 7;
-      case Rank.EIGHT:
+      case Rank.Eight:
         return 8;
-      case Rank.NINE:
+      case Rank.Nine:
         return 9;
-      case Rank.TEN:
-      case Rank.JACK:
-      case Rank.QUEEN:
-      case Rank.KING:
+      case Rank.Ten:
+      case Rank.Jack:
+      case Rank.Queen:
+      case Rank.King:
         return 10;
-      case Rank.ACE:
+      case Rank.Ace:
         return 11;
     }
   }

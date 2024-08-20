@@ -2,31 +2,31 @@ import Rank from '../types/Rank';
 
 export default function rankToString(rank: Rank) {
   switch (rank) {
-    case Rank.ACE:
+    case Rank.Ace:
       return 'A';
-    case Rank.KING:
+    case Rank.King:
       return 'K';
-    case Rank.QUEEN:
+    case Rank.Queen:
       return 'Q';
-    case Rank.JACK:
+    case Rank.Jack:
       return 'J';
-    case Rank.TEN:
+    case Rank.Ten:
       return '10';
-    case Rank.NINE:
+    case Rank.Nine:
       return '9';
-    case Rank.EIGHT:
+    case Rank.Eight:
       return '8';
-    case Rank.SEVEN:
+    case Rank.Seven:
       return '7';
-    case Rank.SIX:
+    case Rank.Six:
       return '6';
-    case Rank.FIVE:
+    case Rank.Five:
       return '5';
-    case Rank.FOUR:
+    case Rank.Four:
       return '4';
-    case Rank.THREE:
+    case Rank.Three:
       return '3';
-    case Rank.TWO:
+    case Rank.Two:
       return '2';
   }
 }
