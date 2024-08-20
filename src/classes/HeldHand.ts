@@ -6,6 +6,14 @@ import Suit from '../types/Suit';
 
 type HeldHandSortBehavior = 'rank' | 'suit';
 
+interface StraightOptions {
+  minimumLength?: 4 | 5;
+  maxRankGap?: 1 | 2;
+}
+
+const DEFAULT_STRAIGHT_MINIMUM_LENGTH = 5;
+const DEFAULT_STRAIGHT_MAX_RANK_GAP = 1;
+
 export default class HeldHand {
   public readonly cards: Card[];
   private privateHeldHandSortBehavior: HeldHandSortBehavior = 'rank';
@@ -52,7 +60,12 @@ export default class HeldHand {
     return this.containsAtLeastNOfAnyRank(2);
   }
 
-  containsStraight() {
+  containsStraight(options: StraightOptions = {}) {
+    const {
+      maxRankGap = DEFAULT_STRAIGHT_MAX_RANK_GAP,
+      minimumLength = DEFAULT_STRAIGHT_MINIMUM_LENGTH,
+    } = options;
+
     const RANK_ORDERING = [
       Rank.Ace,
       Rank.Two,
@@ -70,12 +83,40 @@ export default class HeldHand {
       Rank.Ace,
     ];
 
-    const distinctRanksAsArray = Array.from(this.distinctRanks);
+    const distinctRanksOrderIndices = Array.from(this.distinctRanks)
+      .map((rank) => {
+        const indices: number[] = [];
 
-    for (let i = 0; i < 10; i++) {
-      const orderedRanks = RANK_ORDERING.slice(i, i + 5);
+        RANK_ORDERING.forEach((orderedRank, index) => {
+          if (rank === orderedRank) {
+            indices.push(index);
+          }
+        });
 
-      if (orderedRanks.every((rank) => distinctRanksAsArray.includes(rank))) {
+        return indices;
+      })
+      .flat()
+      .sort((a, b) => a - b);
+
+    let currentStraightLength = 1;
+    let left = 0;
+    let right = 1;
+
+    while (right < distinctRanksOrderIndices.length) {
+      if (
+        distinctRanksOrderIndices[right] - distinctRanksOrderIndices[left] <=
+        maxRankGap
+      ) {
+        currentStraightLength++;
+        left++;
+        right++;
+      } else {
+        currentStraightLength = 1;
+        left++;
+        right = left + 1;
+      }
+
+      if (currentStraightLength >= minimumLength) {
         return true;
       }
     }
@@ -118,7 +159,7 @@ export default class HeldHand {
   }
 
   private get distinctRanks() {
-    const distinctRanks = new Set();
+    const distinctRanks = new Set<Rank>();
 
     this.cards.forEach(({ rank }) => {
       distinctRanks.add(rank);
