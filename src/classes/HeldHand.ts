@@ -53,7 +53,34 @@ export default class HeldHand {
   }
 
   containsStraight() {
-    console.log(this.distinctRanks);
+    const RANK_ORDERING = [
+      Rank.Ace,
+      Rank.Two,
+      Rank.Three,
+      Rank.Four,
+      Rank.Five,
+      Rank.Six,
+      Rank.Seven,
+      Rank.Eight,
+      Rank.Nine,
+      Rank.Ten,
+      Rank.Jack,
+      Rank.Queen,
+      Rank.King,
+      Rank.Ace,
+    ];
+
+    const distinctRanksAsArray = Array.from(this.distinctRanks);
+
+    for (let i = 0; i < 10; i++) {
+      const orderedRanks = RANK_ORDERING.slice(i, i + 5);
+
+      if (orderedRanks.every((rank) => distinctRanksAsArray.includes(rank))) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   containsThreeOfAKind() {

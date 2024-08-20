@@ -9,7 +9,7 @@ import Player from './classes/Player';
 function App() {
   const [count, setCount] = useState(0);
 
-  const deck = new Deck({ numDiscards: 3 });
+  const deck = new Deck({ handsize: 10, numDiscards: 3 });
   const player = new Player(deck);
 
   console.log(player.heldHand.toString());
