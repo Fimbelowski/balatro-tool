@@ -1,15 +1,9 @@
 import Card from '../classes/Card';
-import Rank from '../types/Rank';
-import Suit from '../types/Suit';
+import { ALL_RANKS } from '../types/Rank';
+import { ALL_SUITS } from '../types/Suit';
 
 export default function createStandardPlayingCards() {
-  const cards: Card[] = [];
-
-  Object.values(Suit).forEach((suit) => {
-    Object.values(Rank).forEach((rank) => {
-      cards.push(new Card(suit, rank));
-    });
-  });
-
-  return cards;
+  return ALL_SUITS.map((suit) =>
+    ALL_RANKS.map((rank) => new Card(suit, rank)),
+  ).flat();
 }

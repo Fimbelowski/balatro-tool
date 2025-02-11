@@ -6,14 +6,6 @@ import Suit from '../types/Suit';
 
 type HeldHandSortBehavior = 'rank' | 'suit';
 
-interface StraightOptions {
-  minimumLength?: 4 | 5;
-  maxRankGap?: 1 | 2;
-}
-
-const DEFAULT_STRAIGHT_MINIMUM_LENGTH = 5;
-const DEFAULT_STRAIGHT_MAX_RANK_GAP = 1;
-
 export default class HeldHand {
   public readonly cards: Card[];
   private privateHeldHandSortBehavior: HeldHandSortBehavior = 'rank';
@@ -60,12 +52,7 @@ export default class HeldHand {
     return this.containsAtLeastNOfAnyRank(2);
   }
 
-  containsStraight(options: StraightOptions = {}) {
-    const {
-      maxRankGap = DEFAULT_STRAIGHT_MAX_RANK_GAP,
-      minimumLength = DEFAULT_STRAIGHT_MINIMUM_LENGTH,
-    } = options;
-
+  containsStraight() {
     const RANK_ORDERING = [
       Rank.Ace,
       Rank.Two,
@@ -105,7 +92,7 @@ export default class HeldHand {
     while (right < distinctRanksOrderIndices.length) {
       if (
         distinctRanksOrderIndices[right] - distinctRanksOrderIndices[left] <=
-        maxRankGap
+        1
       ) {
         currentStraightLength++;
         left++;
@@ -116,7 +103,7 @@ export default class HeldHand {
         right = left + 1;
       }
 
-      if (currentStraightLength >= minimumLength) {
+      if (currentStraightLength >= 5) {
         return true;
       }
     }
