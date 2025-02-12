@@ -3,16 +3,14 @@ import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
 
-import Deck from './classes/Deck';
-import Player from './classes/Player';
+import GameManager from './classes/GameManager';
+import RedDeck from './classes/decks/RedDeck';
 
 function App() {
   const [count, setCount] = useState(0);
 
-  const deck = new Deck({ handsize: 10, numDiscards: 3 });
-  const player = new Player(deck);
-
-  console.log(player.heldHand.toString());
+  const gameManager = new GameManager();
+  gameManager.startRun(new RedDeck());
 
   return (
     <>
