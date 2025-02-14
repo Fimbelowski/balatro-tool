@@ -1,5 +1,7 @@
+export const RANK_INDEX_OFFSET = 2;
+
 enum Rank {
-  Two,
+  Two = 2,
   Three,
   Four,
   Five,

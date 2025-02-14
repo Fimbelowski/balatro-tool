@@ -3,14 +3,19 @@ import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
 
-import GameManager from './classes/GameManager';
+import GameState from './classes/GameState';
+import PlayedHand from './classes/PlayedHand';
+import PokerHand from './types/PokerHand';
 import RedDeck from './classes/decks/RedDeck';
 
 function App() {
   const [count, setCount] = useState(0);
 
-  const gameManager = new GameManager();
-  gameManager.startRun(new RedDeck());
+  const gameState = new GameState();
+  gameState.startRun(new RedDeck());
+  console.log(gameState.hand);
+  const playedHand = new PlayedHand(gameState.hand);
+  console.log(PokerHand[playedHand.highestRankingPokerHand]);
 
   return (
     <>
