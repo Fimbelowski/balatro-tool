@@ -13,11 +13,11 @@ export default class PlayedHand extends Hand {
       throw Error('A played hand must contain no more than 5 cards.');
     }
 
-    super();
+    super(cards);
   }
 
   public getScoringCards() {
-    const highestRankingPokerHand = Hand.getHighestRankingPokerHand(this.cards);
+    const highestRankingPokerHand = this.getHighestRankingPokerHand();
 
     switch (highestRankingPokerHand) {
       case PokerHand.FlushFive:

@@ -3,6 +3,8 @@ import PokerHand from '../types/PokerHand';
 import Rank, { RANK_INDEX_OFFSET } from '../types/Rank';
 
 export default abstract class Hand {
+  constructor(public readonly cards: Card[]) {}
+
   public static containsFiveOfAKind(cards: Card[]) {
     const rankFrequencies = Hand.getRankFrequencies(cards);
 
@@ -126,48 +128,48 @@ export default abstract class Hand {
     return numPairs >= 2;
   }
 
-  public static getHighestRankingPokerHand(cards: Card[]) {
-    if (Hand.containsFlushFive(cards)) {
+  public getHighestRankingPokerHand() {
+    if (Hand.containsFlushFive(this.cards)) {
       return PokerHand.FlushFive;
     }
 
-    if (Hand.containsFlushHouse(cards)) {
+    if (Hand.containsFlushHouse(this.cards)) {
       return PokerHand.FlushHouse;
     }
 
-    if (Hand.containsFiveOfAKind(cards)) {
+    if (Hand.containsFiveOfAKind(this.cards)) {
       return PokerHand.FiveOfAKind;
     }
 
-    if (Hand.containsStraightFlush(cards)) {
+    if (Hand.containsStraightFlush(this.cards)) {
       return PokerHand.StraightFlush;
     }
 
-    if (Hand.containsFourOfAKind(cards)) {
+    if (Hand.containsFourOfAKind(this.cards)) {
       return PokerHand.FourOfAKind;
     }
 
-    if (Hand.containsFullHouse(cards)) {
+    if (Hand.containsFullHouse(this.cards)) {
       return PokerHand.FullHouse;
     }
 
-    if (Hand.containsFlush(cards)) {
+    if (Hand.containsFlush(this.cards)) {
       return PokerHand.Flush;
     }
 
-    if (Hand.containsStraight(cards)) {
+    if (Hand.containsStraight(this.cards)) {
       return PokerHand.Straight;
     }
 
-    if (Hand.containsThreeOfAKind(cards)) {
+    if (Hand.containsThreeOfAKind(this.cards)) {
       return PokerHand.ThreeOfAKind;
     }
 
-    if (Hand.containsTwoPair(cards)) {
+    if (Hand.containsTwoPair(this.cards)) {
       return PokerHand.TwoPair;
     }
 
-    if (Hand.containsPair(cards)) {
+    if (Hand.containsPair(this.cards)) {
       return PokerHand.Pair;
     }
 

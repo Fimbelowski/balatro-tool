@@ -3,24 +3,22 @@ import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
 
-import Card from './classes/Card';
-import GameState from './classes/GameState';
-import Rank from './types/Rank';
-import RedDeck from './classes/decks/RedDeck';
-import Suit from './types/Suit';
+import GameManager from './classes/GameManager';
+import RedDeck from './classes/decks/CheckeredDeck';
+import SimulatonManager from './classes/SimulationManager';
 
 function App() {
   const [count, setCount] = useState(0);
+  const gameManager = new GameManager(new RedDeck());
 
-  const gameState = new GameState();
-  gameState.startRun(new RedDeck());
-  gameState.playHand([
-    new Card(Suit.Hearts, Rank.Ace),
-    new Card(Suit.Spades, Rank.King),
-    new Card(Suit.Spades, Rank.Queen),
-    new Card(Suit.Spades, Rank.Jack),
-    new Card(Suit.Spades, Rank.Ten),
-  ]);
+  const simulationManager = new SimulatonManager(
+    gameManager,
+    ({ heldHand, playHand }) => {
+      console.log(heldHand);
+      playHand([heldHand[0].id]);
+    },
+    ({ round }) => round === 2,
+  );
 
   return (
     <>
