@@ -25,6 +25,7 @@ export default class SimulatonManager {
     // A simulation is considered complete when the goal function returns true, or a game over is reached.
     while (!this._goal(gameState) && !gameState.isGameOver) {
       this._strategy(gameInterface);
+      gameInterface = this._gameManager.gameInterface;
       gameState = this._gameManager.gameState;
     }
 

@@ -1,5 +1,7 @@
+import type CardOrCards from './CardOrCards';
+
 export default interface GameActions {
-  discardHand: (cardIds: number[]) => void;
+  discardHand: (cardOrCards: CardOrCards) => void;
   // getRemainingCards: () => void;
-  playHand: (cardIds: number[]) => void;
+  playHand: (cardOrCards: CardOrCards) => void;
 }
