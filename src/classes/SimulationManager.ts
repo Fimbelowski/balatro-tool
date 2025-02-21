@@ -1,8 +1,8 @@
-import type GameInterface from '../types/GameInterface';
+import type GameActions from '../types/GameActions';
 import type GameManager from './GameManager';
 import type GameState from '../types/GameState';
 
-export default class SimulatonManager {
+export default class SimulationManager {
   private readonly _targetNumSimulations = 1;
   private _numLosses = 0;
   private _numSimulations = 0;
@@ -10,7 +10,10 @@ export default class SimulatonManager {
 
   constructor(
     private readonly _gameManager: GameManager,
-    private readonly _strategy: (GameInterface: GameInterface) => void,
+    private readonly _strategy: (
+      gameState: GameState,
+      gameActions: GameActions,
+    ) => void,
     private readonly _goal: (gamestate: GameState) => boolean,
   ) {
     this.runSimulation();
@@ -19,13 +22,12 @@ export default class SimulatonManager {
   private runSimulation() {
     this._gameManager.startRun();
 
-    let gameInterface = this._gameManager.gameInterface;
     let gameState = this._gameManager.gameState;
+    const gameActions = this._gameManager.gameActions;
 
     // A simulation is considered complete when the goal function returns true, or a game over is reached.
     while (!this._goal(gameState) && !gameState.isGameOver) {
-      this._strategy(gameInterface);
-      gameInterface = this._gameManager.gameInterface;
+      this._strategy(gameState, gameActions);
       gameState = this._gameManager.gameState;
     }
 

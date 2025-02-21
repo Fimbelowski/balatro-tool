@@ -2,11 +2,11 @@ import Card from './Card';
 import type CardOrCards from '../types/CardOrCards';
 import Deck from './decks/Deck';
 import DrawPile from './DrawPile';
+import GameActions from '../types/GameActions';
 import type GameState from '../types/GameState';
+import mapGetValueOrThrow from '../utils/mapGetValueOrThrow';
 import PlayedHand from './PlayedHand';
 import PokerHand, { pokerHandToScoringInfo } from '../types/PokerHand';
-import GameInterface from '../types/GameInterface';
-import GameActions from '../types/GameActions';
 
 export default class GameManager {
   private _chipRequirement = 300;
@@ -26,15 +26,9 @@ export default class GameManager {
     };
   }
 
-  public get gameInterface(): GameInterface {
-    return {
-      ...this.gameActions,
-      ...this.gameState,
-    };
-  }
-
   public get gameState(): GameState {
     return {
+      cardsRemainingInDrawPile: this._drawPile.remainingCards,
       chipRequirement: this._chipRequirement,
       chips: this._currentChips,
       heldHand: [...this._heldHand],
@@ -89,15 +83,14 @@ export default class GameManager {
     const playedHand = new PlayedHand(playedCards);
 
     const highestRankingPokerHand = playedHand.getHighestRankingPokerHand();
-    const scoringInfo = pokerHandToScoringInfo.get(highestRankingPokerHand);
+
+    const scoringInfo = mapGetValueOrThrow(
+      pokerHandToScoringInfo,
+      highestRankingPokerHand,
+      `Could not find scoring info for poker hand "${PokerHand[highestRankingPokerHand]}"`,
+    );
 
     playedHand.getScoringCards();
-
-    if (scoringInfo === undefined) {
-      throw Error(
-        `Could not find scoring info for poker hand "${PokerHand[highestRankingPokerHand]}"`,
-      );
-    }
 
     const { chips: baseChips, mult } = scoringInfo;
 

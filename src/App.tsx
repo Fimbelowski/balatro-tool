@@ -5,21 +5,23 @@ import './App.css';
 
 import GameManager from './classes/GameManager';
 import RedDeck from './classes/decks/CheckeredDeck';
-import SimulatonManager from './classes/SimulationManager';
+// import SimulationManager from './classes/SimulationManager';
 
 const gameManager = new GameManager(new RedDeck());
+gameManager.startRun();
+console.log(gameManager.gameState.cardsRemainingInDrawPile);
 
-const simulationManager = new SimulatonManager(
-  gameManager,
-  ({ chipRequirement, chips, heldHand, playHand, round }) => {
-    console.log({ round });
-    console.log({ chipRequirement });
-    console.log({ chips });
+// const simulationManager = new SimulationManager(
+//   gameManager,
+//   ({ chipRequirement, chips, heldHand, playHand, round }) => {
+//     console.log({ round });
+//     console.log({ chipRequirement });
+//     console.log({ chips });
 
-    playHand(heldHand.slice(0, 5));
-  },
-  ({ round }) => round === 2,
-);
+//     playHand(heldHand.slice(0, 5));
+//   },
+//   ({ round }) => round === 2,
+// );
 
 function App() {
   const [count, setCount] = useState(0);

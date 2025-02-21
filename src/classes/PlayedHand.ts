@@ -1,7 +1,7 @@
 import type Card from './Card';
+import createFrequencyMap from '../utils/createFrequencyMap';
 import Hand from './Hand';
 import PokerHand from '../types/PokerHand';
-import type Rank from '../types/Rank';
 
 export default class PlayedHand extends Hand {
   constructor(public readonly cards: Card[]) {
@@ -64,23 +64,7 @@ export default class PlayedHand extends Hand {
   }
 
   private getRankToFrequencyMap() {
-    const rankToFrequencyMap = new Map<Rank, number>();
-
-    this.cards.forEach(({ rank }) => {
-      if (!rankToFrequencyMap.has(rank)) {
-        rankToFrequencyMap.set(rank, 0);
-      }
-
-      const frequency = rankToFrequencyMap.get(rank);
-
-      if (frequency === undefined) {
-        throw Error('Rank not found.');
-      }
-
-      rankToFrequencyMap.set(rank, frequency + 1);
-    });
-
-    return rankToFrequencyMap;
+    return createFrequencyMap(this.cards, ({ rank }) => rank);
   }
 
   private getThreeOfAKindScoringCards() {
