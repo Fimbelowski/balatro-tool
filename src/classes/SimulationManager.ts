@@ -5,17 +5,20 @@ import type Deck from './decks/Deck';
 
 export default class SimulationManager {
   private _gameManager: GameManager;
+  private _numHandsDiscarded = 0;
+  private _numHandsDiscardedPerWin = 0;
+  private _numHandsPlayedPerWin = 0;
   private _numLosses = 0;
   private _numSimulations = 0;
   private _numWins = 0;
   private readonly _targetNumSimulations = 100_000;
 
   constructor(
-    deck: Deck,
+    private readonly _deck: Deck,
     private readonly _strategy: Strategy,
     private readonly _goal: (gamestate: GameState) => boolean,
   ) {
-    this._gameManager = new GameManager(deck);
+    this._gameManager = new GameManager(this._deck);
     this.runAllSimulations();
   }
 
@@ -24,9 +27,19 @@ export default class SimulationManager {
       this.runSimulation();
     }
 
-    console.log('Total simulations:', this._numSimulations);
-    console.log('Total wins:', this._numWins);
-    console.log('Total losses:', this._numLosses);
+    console.log('Total simulations:', this._numSimulations.toLocaleString());
+    console.log('Total wins:', this._numWins.toLocaleString());
+    console.log('Total losses:', this._numLosses.toLocaleString());
+
+    console.log(
+      'Avg Hands Played Per Win:',
+      this._numHandsPlayedPerWin / this._numWins,
+    );
+
+    console.log(
+      'Avg Discards Used Per Win:',
+      this._numHandsDiscardedPerWin / this._numWins,
+    );
   }
 
   private runSimulation() {
@@ -41,6 +54,7 @@ export default class SimulationManager {
 
       if (gameAction === 'discardHand') {
         gameActions.discardHand(cards);
+        this._numHandsDiscarded++;
       } else {
         gameActions.playHand(cards);
       }
@@ -51,6 +65,12 @@ export default class SimulationManager {
     // Check if goal is met, or game over and record result, otherwise rerun this loop.
     if (this._goal(gameState)) {
       this._numWins++;
+
+      this._numHandsPlayedPerWin +=
+        this._deck.numHands - gameState.numRemainingHands;
+
+      this._numHandsDiscardedPerWin +=
+        this._deck.numDiscards - gameState.numRemainingDiscards;
     } else if (gameState.isGameOver) {
       this._numLosses++;
     }
