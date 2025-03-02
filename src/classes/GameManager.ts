@@ -4,9 +4,7 @@ import Deck from './decks/Deck';
 import DrawPile from './DrawPile';
 import GameActions from '../types/GameActions';
 import type GameState from '../types/GameState';
-import mapGetValueOrThrow from '../utils/mapGetValueOrThrow';
 import PlayedHand from './PlayedHand';
-import PokerHand, { pokerHandToScoringInfo } from '../types/PokerHand';
 
 export default class GameManager {
   private _chipRequirement = 300;
@@ -54,10 +52,21 @@ export default class GameManager {
   }
 
   private _discardHand(cardOrCards: CardOrCards) {
+    const normalizedCards = [cardOrCards].flat();
+
+    if (normalizedCards.length === 0) {
+      throw Error(
+        `Must discard at least 1 card. ${normalizedCards.toString()}`,
+      );
+    } else if (normalizedCards.length > 5) {
+      throw Error('Cannot discard more than 5 cards.');
+    }
+
     const cardIds = this._cardOrCardsToIds(cardOrCards);
 
     this._removeCardsFromHeldHand(cardIds);
     this._drawUntilHeldHandIsFull();
+    this._numRemainingDiscards--;
   }
 
   private _drawUntilHeldHandIsFull() {
@@ -82,26 +91,7 @@ export default class GameManager {
     const playedCards = this._removeCardsFromHeldHand(cardIds);
     const playedHand = new PlayedHand(playedCards);
 
-    const highestRankingPokerHand = playedHand.getHighestRankingPokerHand();
-
-    const scoringInfo = mapGetValueOrThrow(
-      pokerHandToScoringInfo,
-      highestRankingPokerHand,
-      `Could not find scoring info for poker hand "${PokerHand[highestRankingPokerHand]}"`,
-    );
-
-    playedHand.getScoringCards();
-
-    const { chips: baseChips, mult } = scoringInfo;
-
-    const scoringCards = playedHand.getScoringCards();
-
-    const totalChips = scoringCards.reduce(
-      (previousTotalChips, { chipValue }) => previousTotalChips + chipValue,
-      baseChips,
-    );
-
-    this._currentChips += totalChips * mult;
+    this._currentChips += playedHand.scoreHand();
     this._numRemainingHands -= 1;
 
     if (this._currentChips >= this._chipRequirement) {

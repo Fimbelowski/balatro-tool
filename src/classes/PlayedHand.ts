@@ -1,7 +1,8 @@
 import type Card from './Card';
 import createFrequencyMap from '../utils/createFrequencyMap';
+import mapGetValueOrThrow from '../utils/mapGetValueOrThrow';
 import Hand from './Hand';
-import PokerHand from '../types/PokerHand';
+import PokerHand, { pokerHandToScoringInfo } from '../types/PokerHand';
 
 export default class PlayedHand extends Hand {
   constructor(public readonly cards: Card[]) {
@@ -93,5 +94,26 @@ export default class PlayedHand extends Hand {
       .map(([rank]) => rank);
 
     return this.cards.filter(({ rank }) => pairRanks.includes(rank));
+  }
+
+  public scoreHand() {
+    const highestRankingPokerHand = this.getHighestRankingPokerHand();
+
+    const scoringInfo = mapGetValueOrThrow(
+      pokerHandToScoringInfo,
+      highestRankingPokerHand,
+      `Could not find scoring info for poker hand "${PokerHand[highestRankingPokerHand]}"`,
+    );
+
+    const { chips: baseChips, mult } = scoringInfo;
+
+    const scoringCards = this.getScoringCards();
+
+    const totalChips = scoringCards.reduce(
+      (previousTotalChips, { chipValue }) => previousTotalChips + chipValue,
+      baseChips,
+    );
+
+    return totalChips * mult;
   }
 }

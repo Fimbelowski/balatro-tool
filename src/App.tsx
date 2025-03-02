@@ -3,27 +3,17 @@ import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
 
-import GameManager from './classes/GameManager';
-import RedDeck from './classes/decks/CheckeredDeck';
-// import SimulationManager from './classes/SimulationManager';
-
-const gameManager = new GameManager(new RedDeck());
-gameManager.startRun();
-console.log(gameManager.gameState.cardsRemainingInDrawPile);
-
-// const simulationManager = new SimulationManager(
-//   gameManager,
-//   ({ chipRequirement, chips, heldHand, playHand, round }) => {
-//     console.log({ round });
-//     console.log({ chipRequirement });
-//     console.log({ chips });
-
-//     playHand(heldHand.slice(0, 5));
-//   },
-//   ({ round }) => round === 2,
-// );
+import forceFlushes from './strategies/forceFlushes';
+import RedDeck from './classes/decks/RedDeck';
+import SimulationManager from './classes/SimulationManager';
 
 function App() {
+  new SimulationManager(
+    new RedDeck(),
+    forceFlushes,
+    ({ round }) => round === 2,
+  );
+
   const [count, setCount] = useState(0);
 
   return (

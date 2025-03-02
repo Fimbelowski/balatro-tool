@@ -1,22 +1,32 @@
-import type GameActions from '../types/GameActions';
-import type GameManager from './GameManager';
+import GameManager from './GameManager';
 import type GameState from '../types/GameState';
+import type { Strategy } from '../types/Strategy';
+import type Deck from './decks/Deck';
 
 export default class SimulationManager {
-  private readonly _targetNumSimulations = 1;
+  private _gameManager: GameManager;
   private _numLosses = 0;
   private _numSimulations = 0;
   private _numWins = 0;
+  private readonly _targetNumSimulations = 100_000;
 
   constructor(
-    private readonly _gameManager: GameManager,
-    private readonly _strategy: (
-      gameState: GameState,
-      gameActions: GameActions,
-    ) => void,
+    deck: Deck,
+    private readonly _strategy: Strategy,
     private readonly _goal: (gamestate: GameState) => boolean,
   ) {
-    this.runSimulation();
+    this._gameManager = new GameManager(deck);
+    this.runAllSimulations();
+  }
+
+  private runAllSimulations() {
+    while (this._numSimulations < this._targetNumSimulations) {
+      this.runSimulation();
+    }
+
+    console.log('Total simulations:', this._numSimulations);
+    console.log('Total wins:', this._numWins);
+    console.log('Total losses:', this._numLosses);
   }
 
   private runSimulation() {
@@ -27,16 +37,21 @@ export default class SimulationManager {
 
     // A simulation is considered complete when the goal function returns true, or a game over is reached.
     while (!this._goal(gameState) && !gameState.isGameOver) {
-      this._strategy(gameState, gameActions);
+      const [gameAction, cards] = this._strategy(gameState, gameActions);
+
+      if (gameAction === 'discardHand') {
+        gameActions.discardHand(cards);
+      } else {
+        gameActions.playHand(cards);
+      }
+
       gameState = this._gameManager.gameState;
     }
 
     // Check if goal is met, or game over and record result, otherwise rerun this loop.
     if (this._goal(gameState)) {
-      console.log('Goal reached!');
       this._numWins++;
     } else if (gameState.isGameOver) {
-      console.log('Game over! :(');
       this._numLosses++;
     }
 
