@@ -1,6 +1,7 @@
 import type Card from './Card';
 import PokerHand from '../types/PokerHand';
 import Rank, { ALL_RANKS, RANK_INDEX_OFFSET } from '../types/Rank';
+import { ALL_SUITS } from '../types/Suit';
 
 export default abstract class Hand {
   constructor(public readonly cards: Card[]) {}
@@ -14,7 +15,13 @@ export default abstract class Hand {
   public static containsFlush(cards: Card[]) {
     const suitFrequencies = Hand.getSuitFrequencies(cards);
 
-    return suitFrequencies.some((value) => value >= 5);
+    for (const suitFrequency of suitFrequencies) {
+      if (suitFrequency >= 5) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public static containsFlushFive(cards: Card[]) {
@@ -214,10 +221,13 @@ export default abstract class Hand {
   }
 
   public static getSuitFrequencies(cards: Card[]) {
-    return cards.reduce((previousValue, { suit }) => {
-      previousValue[suit]++;
-      return previousValue;
-    }, Array(4).fill(0));
+    const suitFrequencies = Array(ALL_SUITS.length).fill(0);
+
+    for (const { suit } of cards) {
+      suitFrequencies[suit]++;
+    }
+
+    return suitFrequencies;
   }
 
   public static groupCardsBySuit(cards: Card[]) {
