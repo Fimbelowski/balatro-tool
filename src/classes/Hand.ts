@@ -1,6 +1,6 @@
 import type Card from './Card';
 import PokerHand from '../types/PokerHand';
-import Rank, { RANK_INDEX_OFFSET } from '../types/Rank';
+import Rank, { ALL_RANKS, RANK_INDEX_OFFSET } from '../types/Rank';
 
 export default abstract class Hand {
   constructor(public readonly cards: Card[]) {}
@@ -63,7 +63,13 @@ export default abstract class Hand {
   public static containsPair(cards: Card[]) {
     const rankFrequencies = Hand.getRankFrequencies(cards);
 
-    return rankFrequencies.some((rankFrequency) => rankFrequency >= 2);
+    for (const rankFrequency of rankFrequencies) {
+      if (rankFrequency >= 2) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public static containsStraight(cards: Card[]) {
@@ -177,10 +183,13 @@ export default abstract class Hand {
   }
 
   public static getRankFrequencies(cards: Card[]) {
-    return cards.reduce((previousValue, { rank }) => {
-      previousValue[rank - RANK_INDEX_OFFSET]++;
-      return previousValue;
-    }, Array(13).fill(0));
+    const rankFrequencies: number[] = Array(ALL_RANKS.length).fill(0);
+
+    for (const { rank } of cards) {
+      rankFrequencies[rank - RANK_INDEX_OFFSET]++;
+    }
+
+    return rankFrequencies;
   }
 
   public static getSuitFrequencies(cards: Card[]) {
