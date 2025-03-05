@@ -73,12 +73,27 @@ export default abstract class Hand {
   }
 
   public static containsStraight(cards: Card[]) {
-    const sortedDistinctRanks: Rank[] = cards
-      .map(({ rank }) => rank)
-      .filter((rank, index, self) => self.indexOf(rank) === index)
-      .sort((a, b) => a - b);
+    const buckets: Rank[][] = [];
 
-    const containsAce = sortedDistinctRanks.includes(Rank.Ace);
+    let containsAce = false;
+
+    for (let i = 0; i < ALL_RANKS.length; i++) {
+      buckets.push([]);
+    }
+
+    for (const { rank } of cards) {
+      const bucket = buckets[rank - RANK_INDEX_OFFSET];
+
+      if (bucket.length === 0) {
+        bucket.push(rank);
+      }
+
+      if (rank === Rank.Ace) {
+        containsAce = true;
+      }
+    }
+
+    const sortedDistinctRanks = Array.prototype.concat(...buckets);
 
     let left = 0;
     let right = 1;
