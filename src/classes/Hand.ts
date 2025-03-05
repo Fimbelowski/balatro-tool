@@ -117,7 +117,13 @@ export default abstract class Hand {
   public static containsThreeOfAKind(cards: Card[]) {
     const rankFrequencies = Hand.getRankFrequencies(cards);
 
-    return rankFrequencies.some((rankFrequency) => rankFrequency >= 3);
+    for (const rankFrequency of rankFrequencies) {
+      if (rankFrequency >= 3) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public static containsTwoPair(cards: Card[]) {
