@@ -23,9 +23,15 @@ export default class SimulationManager {
   }
 
   private runAllSimulations() {
+    const start = window.performance.now();
+
     while (this._numSimulations < this._targetNumSimulations) {
       this.runSimulation();
     }
+
+    const end = window.performance.now();
+    const time = end - start;
+    console.log(`Total runtime: ${time}ms`);
 
     console.log('Total simulations:', this._numSimulations.toLocaleString());
     console.log('Total wins:', this._numWins.toLocaleString());
