@@ -49,22 +49,22 @@ export default abstract class Hand {
   public static containsFullHouse(cards: Card[]) {
     const rankFrequencies = Hand.getRankFrequencies(cards);
 
-    let containsThreeOfAKind = false;
-    let containsPair = false;
+    const pairedRanks = new Set<Rank>();
+    const theeOfAKindRanks = new Set<Rank>();
 
     for (let i = 0; i < rankFrequencies.length; i++) {
       const rankFrequency = rankFrequencies[i];
 
-      if (rankFrequency >= 3 && !containsThreeOfAKind) {
-        containsThreeOfAKind = true;
-        rankFrequencies.splice(i, 1);
-        i = 0;
-      } else if (rankFrequency >= 2) {
-        containsPair = true;
+      if (rankFrequency >= 2) {
+        pairedRanks.add(rankFrequency + RANK_INDEX_OFFSET);
+      }
+
+      if (rankFrequency >= 3) {
+        theeOfAKindRanks.add(rankFrequency + RANK_INDEX_OFFSET);
       }
     }
 
-    return containsThreeOfAKind && containsPair;
+    return theeOfAKindRanks.size >= 1 && pairedRanks.size >= 2;
   }
 
   public static containsPair(cards: Card[]) {
