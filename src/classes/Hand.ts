@@ -125,11 +125,11 @@ export default abstract class Hand {
 
     let numPairs = 0;
 
-    rankFrequencies.forEach((rankFrequency) => {
+    for (const rankFrequency of rankFrequencies) {
       if (rankFrequency >= 2) {
         numPairs++;
       }
-    });
+    }
 
     return numPairs >= 2;
   }
