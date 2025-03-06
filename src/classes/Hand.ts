@@ -139,7 +139,13 @@ export default abstract class Hand {
       (group) => group.length >= 5,
     );
 
-    return cardsGroupedBySuit.some((group) => Hand.containsStraight(group));
+    for (const suitedCards of cardsGroupedBySuit) {
+      if (suitedCards.length >= 5 && Hand.containsStraight(suitedCards)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public static containsThreeOfAKind(cards: Card[]) {
@@ -237,13 +243,16 @@ export default abstract class Hand {
   }
 
   public static groupCardsBySuit(cards: Card[]) {
-    return cards.reduce(
-      (previousValue, card) => {
-        const { suit } = card;
-        previousValue[suit].push(card);
-        return previousValue;
-      },
-      [[], [], [], []] as Array<Array<Card>>,
-    );
+    const buckets: Card[][] = [];
+
+    for (let i = 0; i < ALL_SUITS.length; i++) {
+      buckets.push([]);
+    }
+
+    for (const card of cards) {
+      buckets[card.suit].push(card);
+    }
+
+    return buckets;
   }
 }
