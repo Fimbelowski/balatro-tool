@@ -31,11 +31,15 @@ export default abstract class Hand {
   }
 
   public static containsFlushFive(cards: Card[]) {
-    const cardsGroupedBySuit = Hand.groupCardsBySuit(cards).filter(
-      (group) => group.length >= 5,
-    );
+    const cardsGroupedBySuit = Hand.groupCardsBySuit(cards);
 
-    return cardsGroupedBySuit.some((group) => Hand.containsFiveOfAKind(group));
+    for (const suitedCards of cardsGroupedBySuit) {
+      if (suitedCards.length >= 5 && Hand.containsFiveOfAKind(suitedCards)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public static containsFlushHouse(cards: Card[]) {
