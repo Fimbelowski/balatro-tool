@@ -43,7 +43,13 @@ export default abstract class Hand {
   public static containsFourOfAKind(cards: Card[]) {
     const rankFrequencies = Hand.getRankFrequencies(cards);
 
-    return rankFrequencies.some((rankFrequency) => rankFrequency >= 4);
+    for (const rankFrequency of rankFrequencies) {
+      if (rankFrequency >= 4) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public static containsFullHouse(cards: Card[]) {
