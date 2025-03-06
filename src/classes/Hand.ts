@@ -141,9 +141,7 @@ export default abstract class Hand {
   }
 
   public static containsStraightFlush(cards: Card[]) {
-    const cardsGroupedBySuit = Hand.groupCardsBySuit(cards).filter(
-      (group) => group.length >= 5,
-    );
+    const cardsGroupedBySuit = Hand.groupCardsBySuit(cards);
 
     for (const suitedCards of cardsGroupedBySuit) {
       if (suitedCards.length >= 5 && Hand.containsStraight(suitedCards)) {
