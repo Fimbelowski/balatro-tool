@@ -39,11 +39,15 @@ export default abstract class Hand {
   }
 
   public static containsFlushHouse(cards: Card[]) {
-    const cardsGroupedBySuit = Hand.groupCardsBySuit(cards).filter(
-      (group) => group.length >= 5,
-    );
+    const cardsGroupedBySuit = Hand.groupCardsBySuit(cards);
 
-    return cardsGroupedBySuit.some((group) => Hand.containsFullHouse(group));
+    for (const suitedCards of cardsGroupedBySuit) {
+      if (suitedCards.length >= 5 && Hand.containsFullHouse(suitedCards)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public static containsFourOfAKind(cards: Card[]) {
