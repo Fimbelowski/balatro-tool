@@ -186,17 +186,19 @@ export default abstract class Hand {
     return numPairs >= 2;
   }
 
-  public getHighestRankingPokerHand() {
-    if (Hand.containsFlushFive(this.cards)) {
-      return PokerHand.FlushFive;
-    }
+  public getHighestRankingPokerHand(omitSecretHandTypes = true) {
+    if (!omitSecretHandTypes) {
+      if (Hand.containsFlushFive(this.cards)) {
+        return PokerHand.FlushFive;
+      }
 
-    if (Hand.containsFlushHouse(this.cards)) {
-      return PokerHand.FlushHouse;
-    }
+      if (Hand.containsFlushHouse(this.cards)) {
+        return PokerHand.FlushHouse;
+      }
 
-    if (Hand.containsFiveOfAKind(this.cards)) {
-      return PokerHand.FiveOfAKind;
+      if (Hand.containsFiveOfAKind(this.cards)) {
+        return PokerHand.FiveOfAKind;
+      }
     }
 
     if (Hand.containsStraightFlush(this.cards)) {
