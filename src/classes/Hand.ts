@@ -9,7 +9,13 @@ export default abstract class Hand {
   public static containsFiveOfAKind(cards: Card[]) {
     const rankFrequencies = Hand.getRankFrequencies(cards);
 
-    return rankFrequencies.some((rankFrequency) => rankFrequency >= 5);
+    for (const rankFrequency of rankFrequencies) {
+      if (rankFrequency >= 5) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public static containsFlush(cards: Card[]) {
