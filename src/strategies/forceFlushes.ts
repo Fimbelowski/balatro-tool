@@ -1,4 +1,3 @@
-import createFrequencyMap from '../utils/createFrequencyMap';
 import filterOutSuitedCards from '../utils/filterOutSuitedCards';
 import filterOutOffSuitCards from '../utils/filterOutOffSuitCards';
 import Hand from '../classes/Hand';
@@ -12,15 +11,15 @@ export default function forceFlushes(
 ): StrategyReturnType {
   const { chips, chipRequirement, heldHand, numRemainingDiscards } = gameState;
 
-  const suitToFrequency = createFrequencyMap(heldHand, ({ suit }) => suit);
+  const cardsGroupedBySuit = Hand.groupCardsBySuit(heldHand);
 
-  let highestFrequency = -Infinity;
+  let highestFrequency = 0;
   let highestFrequencySuit = Suit.Spades;
 
-  for (const [suit, frequency] of suitToFrequency) {
-    if (frequency > highestFrequency) {
-      highestFrequency = frequency;
-      highestFrequencySuit = suit;
+  for (const group of cardsGroupedBySuit) {
+    if (group.length > highestFrequency) {
+      highestFrequency = group.length;
+      highestFrequencySuit = group[0].suit;
     }
   }
 
