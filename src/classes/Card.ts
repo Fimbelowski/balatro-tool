@@ -1,7 +1,5 @@
-import Rank from '../types/Rank';
-import rankToString from '../utils/rankToString';
+import Rank, { RANK_INDEX_OFFSET } from '../types/Rank';
 import Suit from '../types/Suit';
-import suitToString from '../utils/suitToString';
 
 export default class Card {
   private static nextId = 1;
@@ -44,17 +42,11 @@ export default class Card {
     }
   }
 
-  public get numericalRank() {
-    const ranks = Object.values(Rank);
-    return ranks.indexOf(this.rank);
+  public get numericalRepresentation() {
+    return this.suit * 13 + this.zeroIndexedRank;
   }
 
-  public get numericalSuit() {
-    const suits = Object.values(Suit);
-    return suits.indexOf(this.suit);
-  }
-
-  public toString() {
-    return `${rankToString(this.rank)}${suitToString(this.suit)}`;
+  public get zeroIndexedRank() {
+    return this.rank - RANK_INDEX_OFFSET;
   }
 }

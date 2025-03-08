@@ -1,7 +1,10 @@
 import type Card from './Card';
 import PokerHand from '../types/PokerHand';
-import Rank, { ALL_RANKS, RANK_INDEX_OFFSET } from '../types/Rank';
+import radixSort from '../utils/radixSort';
+import Rank, { ALL_RANKS } from '../types/Rank';
 import { ALL_SUITS } from '../types/Suit';
+
+const sortedCardsToPokerHand = new Map<string, PokerHand>();
 
 export default abstract class Hand {
   constructor(public readonly cards: Card[]) {}
@@ -76,11 +79,11 @@ export default abstract class Hand {
       const rankFrequency = rankFrequencies[i];
 
       if (rankFrequency >= 2) {
-        pairedRanks.add(rankFrequency + RANK_INDEX_OFFSET);
+        pairedRanks.add(rankFrequency);
       }
 
       if (rankFrequency >= 3) {
-        theeOfAKindRanks.add(rankFrequency + RANK_INDEX_OFFSET);
+        theeOfAKindRanks.add(rankFrequency);
       }
     }
 
@@ -108,11 +111,11 @@ export default abstract class Hand {
       buckets.push([]);
     }
 
-    for (const { rank } of cards) {
-      const bucket = buckets[rank - RANK_INDEX_OFFSET];
+    for (const { rank, zeroIndexedRank } of cards) {
+      const bucket = buckets[zeroIndexedRank];
 
       if (bucket.length === 0) {
-        bucket.push(rank);
+        bucket.push(zeroIndexedRank);
       }
 
       if (rank === Rank.Ace) {
@@ -187,60 +190,61 @@ export default abstract class Hand {
   }
 
   public getHighestRankingPokerHand(omitSecretHandTypes = true) {
+    const cardsAsNumbers = this.cards.map(
+      ({ numericalRepresentation }) => numericalRepresentation,
+    );
+
+    const sortedCardsAsNumbers = radixSort(cardsAsNumbers);
+    const hash = sortedCardsAsNumbers
+      .map((number) => number.toString().padStart(2, '0'))
+      .join('');
+
+    const pokerHandFromLookup = sortedCardsToPokerHand.get(hash);
+
+    if (pokerHandFromLookup !== undefined) {
+      return pokerHandFromLookup;
+    }
+
+    let pokerHand = PokerHand.HighCard;
+
     if (!omitSecretHandTypes) {
       if (Hand.containsFlushFive(this.cards)) {
-        return PokerHand.FlushFive;
-      }
-
-      if (Hand.containsFlushHouse(this.cards)) {
-        return PokerHand.FlushHouse;
-      }
-
-      if (Hand.containsFiveOfAKind(this.cards)) {
-        return PokerHand.FiveOfAKind;
+        pokerHand = PokerHand.FlushFive;
+      } else if (Hand.containsFlushHouse(this.cards)) {
+        pokerHand = PokerHand.FlushHouse;
+      } else if (Hand.containsFiveOfAKind(this.cards)) {
+        pokerHand = PokerHand.FiveOfAKind;
       }
     }
 
     if (Hand.containsStraightFlush(this.cards)) {
-      return PokerHand.StraightFlush;
+      pokerHand = PokerHand.StraightFlush;
+    } else if (Hand.containsFourOfAKind(this.cards)) {
+      pokerHand = PokerHand.FourOfAKind;
+    } else if (Hand.containsFullHouse(this.cards)) {
+      pokerHand = PokerHand.FullHouse;
+    } else if (Hand.containsFlush(this.cards)) {
+      pokerHand = PokerHand.Flush;
+    } else if (Hand.containsStraight(this.cards)) {
+      pokerHand = PokerHand.Straight;
+    } else if (Hand.containsThreeOfAKind(this.cards)) {
+      pokerHand = PokerHand.ThreeOfAKind;
+    } else if (Hand.containsTwoPair(this.cards)) {
+      pokerHand = PokerHand.TwoPair;
+    } else if (Hand.containsPair(this.cards)) {
+      pokerHand = PokerHand.Pair;
     }
 
-    if (Hand.containsFourOfAKind(this.cards)) {
-      return PokerHand.FourOfAKind;
-    }
+    sortedCardsToPokerHand.set(hash, pokerHand);
 
-    if (Hand.containsFullHouse(this.cards)) {
-      return PokerHand.FullHouse;
-    }
-
-    if (Hand.containsFlush(this.cards)) {
-      return PokerHand.Flush;
-    }
-
-    if (Hand.containsStraight(this.cards)) {
-      return PokerHand.Straight;
-    }
-
-    if (Hand.containsThreeOfAKind(this.cards)) {
-      return PokerHand.ThreeOfAKind;
-    }
-
-    if (Hand.containsTwoPair(this.cards)) {
-      return PokerHand.TwoPair;
-    }
-
-    if (Hand.containsPair(this.cards)) {
-      return PokerHand.Pair;
-    }
-
-    return PokerHand.HighCard;
+    return pokerHand;
   }
 
   public static getRankFrequencies(cards: Card[]) {
     const rankFrequencies: number[] = Array(ALL_RANKS.length).fill(0);
 
-    for (const { rank } of cards) {
-      rankFrequencies[rank - RANK_INDEX_OFFSET]++;
+    for (const { zeroIndexedRank } of cards) {
+      rankFrequencies[zeroIndexedRank]++;
     }
 
     return rankFrequencies;
