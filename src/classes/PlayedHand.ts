@@ -18,7 +18,7 @@ export default class PlayedHand extends Hand {
   }
 
   public getScoringCards() {
-    const highestRankingPokerHand = this.getHighestRankingPokerHand();
+    const highestRankingPokerHand = Hand.getHighestRankingPokerHand(this.cards);
 
     switch (highestRankingPokerHand) {
       case PokerHand.FlushFive:
@@ -97,7 +97,7 @@ export default class PlayedHand extends Hand {
   }
 
   public scoreHand() {
-    const highestRankingPokerHand = this.getHighestRankingPokerHand();
+    const highestRankingPokerHand = Hand.getHighestRankingPokerHand(this.cards);
 
     const scoringInfo = mapGetValueOrThrow(
       pokerHandToScoringInfo,

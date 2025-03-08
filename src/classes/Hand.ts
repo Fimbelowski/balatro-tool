@@ -189,8 +189,11 @@ export default abstract class Hand {
     return numPairs >= 2;
   }
 
-  public getHighestRankingPokerHand(omitSecretHandTypes = true) {
-    const cardsAsNumbers = this.cards.map(
+  public static getHighestRankingPokerHand(
+    cards: Card[],
+    omitSecretHandTypes = true,
+  ) {
+    const cardsAsNumbers = cards.map(
       ({ numericalRepresentation }) => numericalRepresentation,
     );
 
@@ -208,30 +211,30 @@ export default abstract class Hand {
     let pokerHand = PokerHand.HighCard;
 
     if (!omitSecretHandTypes) {
-      if (Hand.containsFlushFive(this.cards)) {
+      if (Hand.containsFlushFive(cards)) {
         pokerHand = PokerHand.FlushFive;
-      } else if (Hand.containsFlushHouse(this.cards)) {
+      } else if (Hand.containsFlushHouse(cards)) {
         pokerHand = PokerHand.FlushHouse;
-      } else if (Hand.containsFiveOfAKind(this.cards)) {
+      } else if (Hand.containsFiveOfAKind(cards)) {
         pokerHand = PokerHand.FiveOfAKind;
       }
     }
 
-    if (Hand.containsStraightFlush(this.cards)) {
+    if (Hand.containsStraightFlush(cards)) {
       pokerHand = PokerHand.StraightFlush;
-    } else if (Hand.containsFourOfAKind(this.cards)) {
+    } else if (Hand.containsFourOfAKind(cards)) {
       pokerHand = PokerHand.FourOfAKind;
-    } else if (Hand.containsFullHouse(this.cards)) {
+    } else if (Hand.containsFullHouse(cards)) {
       pokerHand = PokerHand.FullHouse;
-    } else if (Hand.containsFlush(this.cards)) {
+    } else if (Hand.containsFlush(cards)) {
       pokerHand = PokerHand.Flush;
-    } else if (Hand.containsStraight(this.cards)) {
+    } else if (Hand.containsStraight(cards)) {
       pokerHand = PokerHand.Straight;
-    } else if (Hand.containsThreeOfAKind(this.cards)) {
+    } else if (Hand.containsThreeOfAKind(cards)) {
       pokerHand = PokerHand.ThreeOfAKind;
-    } else if (Hand.containsTwoPair(this.cards)) {
+    } else if (Hand.containsTwoPair(cards)) {
       pokerHand = PokerHand.TwoPair;
-    } else if (Hand.containsPair(this.cards)) {
+    } else if (Hand.containsPair(cards)) {
       pokerHand = PokerHand.Pair;
     }
 
