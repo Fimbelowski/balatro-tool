@@ -1,8 +1,8 @@
+import { ALL_SUITS } from '../types/Suit';
 import type Card from './Card';
-import PokerHand from '../types/PokerHand';
+import PokerHand, { pokerHandToScoringInfo } from '../types/PokerHand';
 import radixSort from '../utils/radixSort';
 import Rank, { ALL_RANKS } from '../types/Rank';
-import { ALL_SUITS } from '../types/Suit';
 
 const sortedCardsToPokerHand = new Map<string, PokerHand>();
 
@@ -189,6 +189,20 @@ export default abstract class Hand {
     return numPairs >= 2;
   }
 
+  public static getHighCardScoringCard(cards: Card[]) {
+    let highestRankingCard = cards[0];
+
+    for (let i = 1; i < cards.length; i++) {
+      const currentCard = cards[i];
+
+      if (currentCard.zeroIndexedRank > highestRankingCard.zeroIndexedRank) {
+        highestRankingCard = currentCard;
+      }
+    }
+
+    return highestRankingCard;
+  }
+
   public static getHighestRankingPokerHand(
     cards: Card[],
     omitSecretHandTypes = true,
@@ -243,6 +257,22 @@ export default abstract class Hand {
     return pokerHand;
   }
 
+  public static getPairScoringCards(cards: Card[]) {
+    const cardsGroupedByRank = Hand.groupCardsByRank(cards);
+
+    let highestRankingPairZeroIndexedRank = -Infinity;
+
+    for (let i = 0; i < cardsGroupedByRank.length; i++) {
+      const group = cardsGroupedByRank[i];
+
+      if (group.length === 2) {
+        highestRankingPairZeroIndexedRank = i;
+      }
+    }
+
+    return cardsGroupedByRank[highestRankingPairZeroIndexedRank];
+  }
+
   public static getRankFrequencies(cards: Card[]) {
     const rankFrequencies: number[] = Array(ALL_RANKS.length).fill(0);
 
@@ -253,6 +283,30 @@ export default abstract class Hand {
     return rankFrequencies;
   }
 
+  public static getScoringCards(cards: Card[]) {
+    const highestRankingPokerHand = Hand.getHighestRankingPokerHand(cards);
+
+    switch (highestRankingPokerHand) {
+      case PokerHand.FlushFive:
+      case PokerHand.FlushHouse:
+      case PokerHand.FiveOfAKind:
+      case PokerHand.StraightFlush:
+      case PokerHand.FourOfAKind:
+      case PokerHand.FullHouse:
+      case PokerHand.Flush:
+      case PokerHand.Straight:
+        return cards;
+      case PokerHand.ThreeOfAKind:
+        return Hand.getThreeOfAKindScoringCards(cards);
+      case PokerHand.TwoPair:
+        return Hand.getTwoPairScoringCards(cards);
+      case PokerHand.Pair:
+        return Hand.getPairScoringCards(cards);
+      case PokerHand.HighCard:
+        return [this.getHighCardScoringCard(cards)];
+    }
+  }
+
   public static getSuitFrequencies(cards: Card[]) {
     const suitFrequencies = Array(ALL_SUITS.length).fill(0);
 
@@ -261,6 +315,49 @@ export default abstract class Hand {
     }
 
     return suitFrequencies;
+  }
+
+  public static getThreeOfAKindScoringCards(cards: Card[]) {
+    const cardsGroupedByRank = Hand.groupCardsByRank(cards);
+
+    const scoringCards: Card[] = [];
+
+    for (const group of cardsGroupedByRank) {
+      if (group.length === 3) {
+        scoringCards.push(...group);
+      }
+    }
+
+    return scoringCards;
+  }
+
+  public static getTwoPairScoringCards(cards: Card[]) {
+    const cardsGroupedByRank = Hand.groupCardsByRank(cards);
+
+    const scoringCards: Card[] = [];
+
+    for (let i = 0; i < cardsGroupedByRank.length; i++) {
+      const group = cardsGroupedByRank[i];
+      if (group.length === 2) {
+        scoringCards.push(...group);
+      }
+    }
+
+    return scoringCards;
+  }
+
+  public static groupCardsByRank(cards: Card[]) {
+    const buckets: Card[][] = [];
+
+    for (let i = 0; i < ALL_RANKS.length; i++) {
+      buckets.push([]);
+    }
+
+    for (const card of cards) {
+      buckets[card.zeroIndexedRank].push(card);
+    }
+
+    return buckets;
   }
 
   public static groupCardsBySuit(cards: Card[]) {
@@ -275,5 +372,29 @@ export default abstract class Hand {
     }
 
     return buckets;
+  }
+
+  public static scoreHand(cards: Card[]) {
+    if (cards.length === 0) {
+      throw Error('A played hand must contain at least 1 card.');
+    }
+
+    if (cards.length > 5) {
+      throw Error('A played hand must contain no more than 5 cards.');
+    }
+
+    const highestRankingPokerHand = Hand.getHighestRankingPokerHand(cards);
+
+    const scoringInfo = pokerHandToScoringInfo[highestRankingPokerHand];
+    const { chips: baseChips, mult } = scoringInfo;
+
+    const scoringCards = Hand.getScoringCards(cards);
+
+    const totalChips = scoringCards.reduce(
+      (previousTotalChips, { chipValue }) => previousTotalChips + chipValue,
+      baseChips,
+    );
+
+    return totalChips * mult;
   }
 }

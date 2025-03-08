@@ -1,7 +1,7 @@
 import createFrequencyMap from '../utils/createFrequencyMap';
 import filterOutSuitedCards from '../utils/filterOutSuitedCards';
 import filterOutOffSuitCards from '../utils/filterOutOffSuitCards';
-import PlayedHand from '../classes/PlayedHand';
+import Hand from '../classes/Hand';
 import sortCardsByRankAscending from '../utils/sortCardsByRankAscending';
 import sortCardsByRankDescending from '../utils/sortCardsByRankDescending';
 import type { StrategyParams, StrategyReturnType } from '../types/Strategy';
@@ -30,9 +30,7 @@ export default function forceFlushes(
 
   if (highestFrequency >= 5) {
     const highestRankingSuitedCards = suitedCardsByRankDescending.slice(0, 5);
-    const currentBestScore = new PlayedHand(
-      highestRankingSuitedCards,
-    ).scoreHand();
+    const currentBestScore = Hand.scoreHand(highestRankingSuitedCards);
 
     if (currentBestScore >= chipRequirement - chips) {
       return ['playHand', highestRankingSuitedCards];

@@ -4,7 +4,7 @@ import Deck from './decks/Deck';
 import DrawPile from './DrawPile';
 import GameActions from '../types/GameActions';
 import type GameState from '../types/GameState';
-import PlayedHand from './PlayedHand';
+import Hand from './Hand';
 
 export default class GameManager {
   private _chipRequirement = 300;
@@ -89,9 +89,8 @@ export default class GameManager {
     const cardIds = this._cardOrCardsToIds(cardOrCards);
 
     const playedCards = this._removeCardsFromHeldHand(cardIds);
-    const playedHand = new PlayedHand(playedCards);
 
-    this._currentChips += playedHand.scoreHand();
+    this._currentChips += Hand.scoreHand(playedCards);
     this._numRemainingHands -= 1;
 
     if (this._currentChips >= this._chipRequirement) {
