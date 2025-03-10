@@ -56,7 +56,7 @@ export default class SimulationManager {
 
     // A simulation is considered complete when the goal function returns true, or a game over is reached.
     while (!this._goal(gameState) && !gameState.isGameOver) {
-      const [gameAction, cards] = this._strategy(gameState, gameActions);
+      const [gameAction, cards] = this._strategy(gameState);
 
       if (gameAction === 'discardHand') {
         gameActions.discardHand(cards);
